@@ -1,4 +1,5 @@
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
@@ -9,19 +10,35 @@ import javax.swing.JOptionPane;
  */
 
 public class PageHolder extends JEditorPane {
+    
 
-    public PageHolder() {
+    String currentURL = "";
+    HyperLinkHandler linkHnd;
+    MainGUIController mainCont;
+
+    public PageHolder(MainGUIController mainCont) {
+        this.mainCont = mainCont;
         setEditable(false);
-        setPreferredSize(new Dimension(1900, 1080));
+        linkHnd = new HyperLinkHandler(mainCont);
+        addHyperlinkListener(linkHnd);
+        setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width - 20, 
+                Toolkit.getDefaultToolkit().getScreenSize().height - 150));
     }
     
-    @Override
-    public void setPage(String url){
-        try {
-                super.setPage(url);
+    public boolean loadPage(String url){
+            try {
+                mainCont.gui.tfAddres.setText(url);
+                setPage(url);
+                currentURL = url;
+                
+                addPropertyChangeListener(null);
+                //mainCont.search();
+                
             }
             catch(IOException ioexp){
-                JOptionPane.showMessageDialog(null,"page not found","bad url",JOptionPane.ERROR_MESSAGE);    
+                JOptionPane.showMessageDialog(null,"page not found","bad url",JOptionPane.ERROR_MESSAGE);
+                return false;
             }
+            return true;
     }
 }

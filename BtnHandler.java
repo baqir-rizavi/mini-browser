@@ -1,12 +1,5 @@
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
@@ -15,14 +8,35 @@ import java.awt.event.ActionListener;
 public class BtnHandler implements ActionListener {
 
     MainGUI gui;
+    MainGUIController mainCont;
 
-    public BtnHandler(MainGUI gui) {
+    public BtnHandler(MainGUI gui, MainGUIController mainCont) {
         this.gui = gui;
+        this.mainCont = mainCont;
     }
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        gui.pghold.setPage(gui.tfAddress.getText());
+        System.out.println(ae.getActionCommand());
+        if (ae.getActionCommand().equals("GO") || ae.getActionCommand().equals("address"))
+            mainCont.goAndAddressPressed(gui.tfAddres.getText());
+        if (ae.getActionCommand().equals("back"))
+            mainCont.back();
+        if (ae.getActionCommand().equals("forward"))
+            mainCont.forward();
+        if (ae.getActionCommand().equals("addfav"))
+            mainCont.addFav();
+        if (ae.getActionCommand().equals("home"))
+            mainCont.home();
+        if (ae.getActionCommand().equals("refresh"))
+            mainCont.refresh();
+        if (ae.getActionCommand().equals("history"))
+            mainCont.history();
+        if (ae.getActionCommand().equals("favorities"))
+            mainCont.favorities();
+        if (ae.getActionCommand().equals("Set Homepage"))
+            mainCont.setHome();
+        if (ae.getActionCommand().equals("firewall"))
+            mainCont.addFirewall();
     }
-    
 }
