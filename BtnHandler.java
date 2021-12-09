@@ -38,5 +38,9 @@ public class BtnHandler implements ActionListener {
             mainCont.setHome();
         if (ae.getActionCommand().equals("firewall"))
             mainCont.addFirewall();
+        if (ae.getActionCommand().equals("manage firewall"))
+            mainCont.manageFirewall();
+        if (ae.getActionCommand().equals("search"))
+            mainCont.search();
     }
 }

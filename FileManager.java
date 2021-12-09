@@ -17,17 +17,22 @@ public class FileManager {
         static String HISTORY = "history.txt";
         static String FAVORITIES = "favorities.txt";
         static String FIREWALL = "firewall.txt";
+        static String ENABLE_FIREWALL_CHECK = "fcheck.txt";
     }
     
     private static String DEFAULT_HOME_URL = "http://rizavi.yolasite.com/";
     
     public static void initFiles()
     {
-        if(!new File(FileNames.HOME).exists() || !new File(FileNames.HISTORY).exists() || !new File(FileNames.FAVORITIES).exists())
+        if(!new File(FileNames.HOME).exists() || !new File(FileNames.HISTORY).exists() || !new File(FileNames.FAVORITIES).exists()
+                || !new File(FileNames.FIREWALL).exists() || !new File(FileNames.ENABLE_FIREWALL_CHECK).exists())
         {
+            boolean c = true;
             writeIn(FileNames.HOME, DEFAULT_HOME_URL);
             writeIn(FileNames.HISTORY, null);
             writeIn(FileNames.FAVORITIES, null);
+            writeIn(FileNames.FIREWALL, null);
+            writeIn(FileNames.ENABLE_FIREWALL_CHECK, c);
         }
     }
     

@@ -27,7 +27,7 @@ public class MainGUI extends JFrame {
    
     PageHolder pghold;
     
-    JButton back,forward,refresh,home,GObtn, addFav, firewall;
+    JButton back,forward,refresh,home,GObtn, addFav, firewall, search;
     
     MainGUIController mainCont;
 
@@ -64,13 +64,18 @@ public class MainGUI extends JFrame {
         topArea.add(home = new JButton(new ImageIcon(new ImageIcon(this.getClass().getResource("home.png")).getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT))));
         topArea.add(addFav = new JButton(new ImageIcon(new ImageIcon(this.getClass().getResource("star.png")).getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT))));
         topArea.add(firewall = new JButton(new ImageIcon(new ImageIcon(this.getClass().getResource("firewall.png")).getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT))));
+        topArea.add(search = new JButton(new ImageIcon(new ImageIcon(this.getClass().getResource("search.png")).getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT))));
 
+        forward.setEnabled(false);
+        back.setEnabled(false);
+        
         back.setPreferredSize(new Dimension(30,30));
         forward.setPreferredSize(new Dimension(30,30));
         home.setPreferredSize(new Dimension(30,30));
         refresh.setPreferredSize(new Dimension(30,30));
         addFav.setPreferredSize(new Dimension(30,30));
         firewall.setPreferredSize(new Dimension(30,30));
+        search.setPreferredSize(new Dimension(30,30));
         
         back.setActionCommand("back");
         forward.setActionCommand("forward");
@@ -78,6 +83,7 @@ public class MainGUI extends JFrame {
         refresh.setActionCommand("refresh");
         addFav.setActionCommand("addfav");
         firewall.setActionCommand("firewall");
+        search.setActionCommand("search");
         //-----------
         
         // address bar
@@ -93,16 +99,18 @@ public class MainGUI extends JFrame {
     void setMenuBar(){
         bar = new JMenuBar();
         options = new JMenu("Options");
-        items = new JMenuItem[3];
+        items = new JMenuItem[4];
         
         items[0] = new JMenuItem("history");
         items[1] = new JMenuItem("favorities");
         items[2] = new JMenuItem("Set Homepage");
+        items[3] = new JMenuItem("manage firewall");
         
         bar.add(options);
         options.add(items[0]);
         options.add(items[1]);
         options.add(items[2]);
+        options.add(items[3]);
     }
     
     void setPageArea(){

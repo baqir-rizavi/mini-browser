@@ -11,21 +11,21 @@ import javax.swing.JOptionPane;
  */
 
 public class MainGUIController {
-
     ApplicationController appCont;
+    HistoryGUIController hisCont;
+    FavoritiesGUIController favCont;
+    FirewallGUIController fireCont;
+    
     MainGUI gui;
+    BtnHandler btnHnd;
+    String homeURL;
     
     Stack<String> back;
     Stack<String> forward;
     ArrayList<String> firewall;
     Stack<Pair<String, String>> history;
     Stack<Pair<String, String>> favorities;
-    String homeURL;
     
-    HistoryGUIController hisCont;
-    FavoritiesGUIController favCont;
-    
-    BtnHandler btnHnd;
 
     public MainGUIController(ApplicationController appCont) {
         this.appCont = appCont;
@@ -46,31 +46,64 @@ public class MainGUIController {
     void back(){
         boolean c; 
         if (!back.empty()){
-            c =  gui.pghold.loadPage(back.peek());
-                forward.push(back.pop());
+                forward.push(gui.pghold.currentURL);
+                gui.forward.setEnabled(true);
+            c =  gui.pghold.loadPage(back.pop());
+            if (back.empty())
+                gui.back.setEnabled(false);
         }
     }
+    
     void forward(){
         boolean c;
         if (!forward.empty()){
-            c = gui.pghold.loadPage(forward.peek());
-                back.push(forward.pop());
+                back.push(gui.pghold.currentURL);
+                gui.back.setEnabled(true);
+            c = gui.pghold.loadPage(forward.pop());
+            if (forward.empty())
+                gui.forward.setEnabled(false);
+        }
+    }
+    
+    void search(){
+        String text = gui.pghold.getText().replaceAll("<[^>]*>", "").replaceAll("(?m)^[ \t]*\r?\n", "");
+        String toSearch = JOptionPane.showInputDialog(null, "enter what you want to search:", "search the page", JOptionPane.QUESTION_MESSAGE);
+        int occurrence = 0;
+        if (toSearch != null){
+            if (toSearch.length() != 0)
+                occurrence = (text.length() - text.replaceAll(toSearch, "").length()) / toSearch.length();
+            JOptionPane.showMessageDialog(null, occurrence + " ocurrences found", "FOUND", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     void goAndAddressPressed(String url){
-        for (String key : firewall) {
-            if (url.contains(key))
-            {
-                JOptionPane.showMessageDialog(null,"page not found","url blocked",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
+        
+        String prevURL = gui.pghold.currentURL;
+        
+        if (prevURL.equals(url))
+            return;
         
         boolean c = gui.pghold.loadPage(url);
         if (c){
-            back.push(url);
+            back.push(prevURL);
+            gui.back.setEnabled(true);
             history.push(new Pair(url, getTime()));
-        }    
+        }
+        else
+        {
+            System.out.println("unloadable site: " + url);
+        }
+    } 
+
+    boolean firewallCheckURL(String url) {
+        if (!(boolean)FileManager.readFrom(FileManager.FileNames.ENABLE_FIREWALL_CHECK))
+            return false;
+        for (String key : firewall) {
+            if (url.contains(key)) {
+                JOptionPane.showMessageDialog(null,"page was blocked by firewall","url blocked",JOptionPane.ERROR_MESSAGE);
+                return true;
+            }
+        }
+        return false;
     }
     
     void addFav(){
@@ -93,27 +126,7 @@ public class MainGUIController {
         LocalDateTime now = LocalDateTime.now();  
         return dtf.format(now);  
     }
-    
-    //void search() {
-//        try{
-//      URL url = new URL("http://www.google.com/");
-//      //Retrieving the contents of the specified page
-//        Scanner sc = new Scanner(url.openStream());
-//      //Instantiating the StringBuffer class to hold the result
-//      StringBuffer sb = new StringBuffer();
-//      while(sc.hasNext()) {
-//         sb.append(sc.next());
-//         //System.out.println(sc.next());
-//      }
-//      //Retrieving the String from the String Buffer object
-//      String result = sb.toString();
-//      System.out.println(result = result.replaceAll("<[^>]*>", ""));
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//    }
-    
+        
     void history(){
         hisCont = new HistoryGUIController(history, this);
     }
@@ -130,6 +143,10 @@ public class MainGUIController {
         }
     }
     
+    void manageFirewall(){
+        fireCont = new FirewallGUIController(firewall);
+    }
+    
     void setHome()
     {
         String value = JOptionPane.showInputDialog(null, "Enter URL of the page:", "Set Homepage", JOptionPane.QUESTION_MESSAGE);
@@ -138,6 +155,7 @@ public class MainGUIController {
             homeURL = value;
         }
     }
+    
     
     void attachBtnHandler()
     {
@@ -150,9 +168,12 @@ public class MainGUIController {
         gui.tfAddres.addActionListener(btnHnd);
         gui.GObtn.addActionListener(btnHnd);
         gui.firewall.addActionListener(btnHnd);
+        gui.search.addActionListener(btnHnd);
+        
         gui.items[0].addActionListener(btnHnd);
         gui.items[1].addActionListener(btnHnd);
         gui.items[2].addActionListener(btnHnd);
+        gui.items[3].addActionListener(btnHnd);
     }
     
     void writeData(){
@@ -160,7 +181,6 @@ public class MainGUIController {
         FileManager.writeIn(FileManager.FileNames.FAVORITIES, favorities);
         FileManager.writeIn(FileManager.FileNames.HOME, homeURL);
         FileManager.writeIn(FileManager.FileNames.FIREWALL, firewall);
-        System.out.println("written   hahahahahahahhaha");
     }
     
     void loadData(){
@@ -169,6 +189,8 @@ public class MainGUIController {
         homeURL = (String)FileManager.readFrom(FileManager.FileNames.HOME);
         firewall = (ArrayList<String>)FileManager.readFrom(FileManager.FileNames.FIREWALL);
         
+        
+        // these can be null when app is loaded for the first time
         if (history == null){
             history = new Stack<Pair<String, String>>();
         }
@@ -178,7 +200,8 @@ public class MainGUIController {
         if (firewall == null){
             firewall = new ArrayList<String>();
         }
-        // homeURL can never be null
-        System.out.println("Read    hahahhahahahahaha");
+        
+        // homeURL can never be null (see FileManager class), so load it
+        gui.pghold.loadPage(homeURL);
     }
 }

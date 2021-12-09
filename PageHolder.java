@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 public class PageHolder extends JEditorPane {
     
-
     String currentURL = "";
     HyperLinkHandler linkHnd;
     MainGUIController mainCont;
@@ -28,12 +27,10 @@ public class PageHolder extends JEditorPane {
     public boolean loadPage(String url){
             try {
                 mainCont.gui.tfAddres.setText(url);
+                if (mainCont.firewallCheckURL(url))
+                    return false;
                 setPage(url);
                 currentURL = url;
-                
-                addPropertyChangeListener(null);
-                //mainCont.search();
-                
             }
             catch(IOException ioexp){
                 JOptionPane.showMessageDialog(null,"page not found","bad url",JOptionPane.ERROR_MESSAGE);
